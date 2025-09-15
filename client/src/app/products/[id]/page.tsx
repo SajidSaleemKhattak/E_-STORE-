@@ -21,26 +21,28 @@ const product: ProductType = {
   },
 };
 
-// ✅ Define safe props type (no PageProps)
-type Props = {
+// ✅ Props for both page and metadata
+interface PageProps {
   params: { id: string };
   searchParams?: { color?: string; size?: string };
-};
+}
 
-// ✅ Correct generateMetadata signature
+// ✅ generateMetadata must be async and match Next.js signature
 export async function generateMetadata(
-  { params }: Props,
+  { params }: PageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  // TODO: fetch product by id using params.id
+  const id = params.id;
+
+  // TODO: fetch product by id using `id`
   return {
     title: product.name,
     description: product.description,
   };
 }
 
-// ✅ Page component
-export default function ProductPage({ params, searchParams }: Props) {
+// ✅ Page Component
+export default function ProductPage({ params, searchParams }: PageProps) {
   const { size, color } = searchParams || {};
 
   const selectedSize = size || product.sizes[0];
