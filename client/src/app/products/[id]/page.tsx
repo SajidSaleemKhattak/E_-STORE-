@@ -25,25 +25,25 @@ export const generateMetadata = async ({
 }: {
   params: { id: string };
 }) => {
-  // TODO:get the product from db
-  // TEMPORARY
+  // TODO: fetch product by id from DB
   return {
     title: product.name,
-    describe: product.description,
+    description: product.description, // typo fixed: was "describe"
   };
 };
 
-const ProductPage = async ({
+const ProductPage = ({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ color: string; size: string }>;
+  params: { id: string };
+  searchParams?: { color?: string; size?: string };
 }) => {
-  const { size, color } = await searchParams;
+  const { size, color } = searchParams || {};
 
-  const selectedSize = size || (product.sizes[0] as string);
-  const selectedColor = color || (product.colors[0] as string);
+  const selectedSize = size || product.sizes[0];
+  const selectedColor = color || product.colors[0];
+
   return (
     <div className="flex flex-col gap-4 lg:flex-row md:gap-12 mt-12">
       {/* IMAGE */}
@@ -55,16 +55,19 @@ const ProductPage = async ({
           className="object-contain rounded-md"
         />
       </div>
+
       {/* DETAILS */}
       <div className="w-full lg:w-7/12 flex flex-col gap-4">
         <h1 className="text-2xl font-medium">{product.name}</h1>
         <p className="text-gray-500">{product.description}</p>
         <h2 className="text-2xl font-semibold">${product.price.toFixed(2)}</h2>
+
         <ProductInteraction
           product={product}
           selectedSize={selectedSize}
           selectedColor={selectedColor}
         />
+
         {/* CARD INFO */}
         <div className="flex items-center gap-2 mt-4">
           <Image
@@ -89,6 +92,7 @@ const ProductPage = async ({
             className="rounded-md"
           />
         </div>
+
         <p className="text-gray-500 text-xs">
           By clicking Pay Now, you agree to our{" "}
           <span className="underline hover:text-black">Terms & Conditions</span>{" "}
