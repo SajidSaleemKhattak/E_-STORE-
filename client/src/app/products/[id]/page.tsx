@@ -2,7 +2,7 @@ import ProductInteraction from "@/components/ProductInteraction";
 import { ProductType } from "@/types";
 import Image from "next/image";
 
-// TEMPORARY
+// TEMPORARY PRODUCT DATA
 const product: ProductType = {
   id: 1,
   name: "Adidas CoreFit T-Shirt",
@@ -20,25 +20,31 @@ const product: ProductType = {
   },
 };
 
-export const generateMetadata = async ({
-  params,
-}: {
-  params: { id: string };
-}) => {
+// ✅ Define proper props type for this route
+interface ProductPageProps {
+  params: {
+    id: string;
+  };
+  searchParams?: {
+    color?: string;
+    size?: string;
+  };
+}
+
+// ✅ Fix generateMetadata typing
+export async function generateMetadata({ params }: ProductPageProps) {
   // TODO: fetch product by id from DB
   return {
     title: product.name,
-    description: product.description, // typo fixed: was "describe"
+    description: product.description,
   };
-};
+}
 
-const ProductPage = ({
+// ✅ Use the same props type here
+export default function ProductPage({
   params,
   searchParams,
-}: {
-  params: { id: string };
-  searchParams?: { color?: string; size?: string };
-}) => {
+}: ProductPageProps) {
   const { size, color } = searchParams || {};
 
   const selectedSize = size || product.sizes[0];
@@ -104,6 +110,4 @@ const ProductPage = ({
       </div>
     </div>
   );
-};
-
-export default ProductPage;
+}
