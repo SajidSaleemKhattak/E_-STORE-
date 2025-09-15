@@ -23,7 +23,7 @@ const product: ProductType = {
 
 // ✅ Props for both page and metadata
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
   searchParams?: { color?: string; size?: string };
 }
 
@@ -32,7 +32,8 @@ export async function generateMetadata(
   { params }: PageProps,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const id = params.id;
+  // Await the params promise
+  const { id } = await params;
 
   // TODO: fetch product by id using `id`
   return {
@@ -41,8 +42,10 @@ export async function generateMetadata(
   };
 }
 
-// ✅ Page Component
-export default function ProductPage({ params, searchParams }: PageProps) {
+// ✅ Page Component - Make it async and await params
+export default async function ProductPage({ params, searchParams }: PageProps) {
+  // Await the params promise
+  const { id } = await params;
   const { size, color } = searchParams || {};
 
   const selectedSize = size || product.sizes[0];
