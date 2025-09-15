@@ -24,16 +24,16 @@ const product: ProductType = {
 // ✅ Props for both page and metadata
 interface PageProps {
   params: Promise<{ id: string }>;
-  searchParams?: { color?: string; size?: string };
+  searchParams: Promise<{ color?: string; size?: string } | undefined>;
 }
 
 // ✅ generateMetadata must be async and match Next.js signature
-export async function generateMetadata(
-  { params }: PageProps,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  // Await the params promise
-  const { id } = await params;
+export async function generateMetadata({
+  params,
+}: PageProps): // parent: ResolvingMetadata  // Removed unused parent
+Promise<Metadata> {
+  const resolvedParams = await params;
+  const id = resolvedParams.id; // Awaited and assigned (even if not used yet)
 
   // TODO: fetch product by id using `id`
   return {
@@ -42,11 +42,14 @@ export async function generateMetadata(
   };
 }
 
-// ✅ Page Component - Make it async and await params
+// ✅ Page Component
 export default async function ProductPage({ params, searchParams }: PageProps) {
-  // Await the params promise
-  const { id } = await params;
-  const { size, color } = searchParams || {};
+  // Await params if needed (currently unused in page, but awaited for completeness)
+  const resolvedParams = await params;
+  // const id = resolvedParams.id;  // Uncomment if you need it later
+
+  const resolvedSearchParams = (await searchParams) || {};
+  const { size, color } = resolvedSearchParams;
 
   const selectedSize = size || product.sizes[0];
   const selectedColor = color || product.colors[0];
