@@ -1,6 +1,7 @@
 import ProductInteraction from "@/components/ProductInteraction";
 import { ProductType } from "@/types";
 import Image from "next/image";
+import { Metadata, ResolvingMetadata } from "next";
 
 // TEMPORARY PRODUCT DATA
 const product: ProductType = {
@@ -20,31 +21,26 @@ const product: ProductType = {
   },
 };
 
-// ✅ Define proper props type for this route
-interface ProductPageProps {
-  params: {
-    id: string;
-  };
-  searchParams?: {
-    color?: string;
-    size?: string;
-  };
-}
+// ✅ Define safe props type (no PageProps)
+type Props = {
+  params: { id: string };
+  searchParams?: { color?: string; size?: string };
+};
 
-// ✅ Fix generateMetadata typing
-export async function generateMetadata({ params }: ProductPageProps) {
-  // TODO: fetch product by id from DB
+// ✅ Correct generateMetadata signature
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // TODO: fetch product by id using params.id
   return {
     title: product.name,
     description: product.description,
   };
 }
 
-// ✅ Use the same props type here
-export default function ProductPage({
-  params,
-  searchParams,
-}: ProductPageProps) {
+// ✅ Page component
+export default function ProductPage({ params, searchParams }: Props) {
   const { size, color } = searchParams || {};
 
   const selectedSize = size || product.sizes[0];
